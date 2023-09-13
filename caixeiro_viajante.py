@@ -18,7 +18,12 @@ def ajusta_coordenada(coordenada):
 df = pd.read_csv('escolas.csv', usecols=['lat','lon'])
 df['lat'] = df['lat'].apply(ajusta_coordenada)
 df['lon'] = df['lon'].apply(ajusta_coordenada)
-df.hist()
+
+#%% plot coords
+import matplotlib.pyplot as plt
+plt.scatter(df['lon'], df['lat'])
+plt.show()
+
 
 #%% Caixeiro Viajante
 import numpy as np
@@ -45,35 +50,30 @@ def vizinho_mais_proximo(escola, visitados, proximos):
     visitados[escola] = 1
     for i in range(len(visitados)):
         proxima_escola = proximos[escola][i]
+        # print(escola, proxima_escola, visitados[proxima_escola])
         if visitados[proxima_escola] == 0:
-            return [i] + vizinho_mais_proximo(proxima_escola, visitados, proximos)
-    return [i]
+            return [escola] + vizinho_mais_proximo(proxima_escola, visitados, proximos)
+    return [escola]
 
-def metodo_vizinho_mais_proximo(coordenadas):
+def caixeiro_viajante(coordenadas):
     proximos = calcula_distancias(coordenadas)
     
     visitados = np.zeros(len(coordenadas))
     
-    caminho = vizinho_mais_proximo(0, visitados, proximos)
+    first = np.random.randint(0, len(coordenadas))
+    caminho = vizinho_mais_proximo(first, visitados, proximos)
 
+    caminho.append(caminho[0])
     return caminho
 
 coordenadas = df[['lat','lon']].to_numpy()
 
-metodo_vizinho_mais_proximo(coordenadas)
+caminho = caixeiro_viajante(coordenadas)
+caminho
 # %%
-
-distancias = np.zeros((len(coordenadas), len(coordenadas)))
-for i in range(len(coordenadas)):
-    for j in range(len(coordenadas)):
-        distancias[i,j] = distancia_euclidiana(coordenadas[i], coordenadas[j])
-
-sequencia = np.arange(len(coordenadas))
-matrix_combinacoes = np.array([sequencia]*len(coordenadas))
-
-for i in range(len(coordenadas)):
-    matrix_combinacoes[i] = matrix_combinacoes[i][np.argsort(distancias[i])]
-    
-matrix_combinacoes
-
+import matplotlib.pyplot as plt
+plt.scatter(df['lon'], df['lat'])
+plt.plot(df['lon'][caminho], df['lat'][caminho], 'r')
+plt.savefig('melhor.png')
+plt.show()
 # %%
