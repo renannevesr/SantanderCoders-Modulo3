@@ -15,7 +15,7 @@ def ajusta_coordenada(coordenada):
         coordenada = coordenada / 10**(pot-1)
     return float(coordenada)
 
-df = pd.read_csv('escolas.csv', usecols=['lat','lon'])
+df = pd.read_csv('data/escolas.csv', usecols=['lat','lon'])
 df['lat'] = df['lat'].apply(ajusta_coordenada)
 df['lon'] = df['lon'].apply(ajusta_coordenada)
 
@@ -74,6 +74,6 @@ caminho
 import matplotlib.pyplot as plt
 plt.scatter(df['lon'], df['lat'])
 plt.plot(df['lon'][caminho], df['lat'][caminho], 'r')
-plt.savefig('melhor.png')
+plt.savefig('caminho.png')
 plt.show()
 # %%
